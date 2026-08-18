@@ -51,37 +51,20 @@ Copy the example and open it in any text editor:
 cp .env.example .env
 ```
 
-The `.env` file is a list of `NAME=value` lines. You need to fill in:
+The `.env` file is a list of `NAME=value` lines. You only need to fill in four:
 
 | Setting | What it is | Example (Betjordan staging) |
 |---|---|---|
 | `SITE_URL` | The website of the brand you're testing | `https://betjordan.stage24.net` |
-| `CMS_BRAND_ID` | The brand's number **in the CMS** | `9` |
-| `PORTAL_BRAND_ID` | The brand's number **in the portal** | `5` |
-| `CMS_REGION_ID` | The region's number, or empty for all | *(empty)* |
+| `BRAND` | The brand's name, as it appears in the CMS | `BetJordan` |
+| `REGION` | A region name, or empty to test the whole brand | *(empty)* |
 | `TEST_USER` / `TEST_PASSWORD` | Your QA test account for that brand | from the ClickUp page |
 
-Don't know the brand/region numbers? That's what the first command is for:
+The tool looks up all the internal ids by itself from the brand name. If you
+misspell it, it answers with the list of brands that exist, so you can just copy
+the right one.
 
-### 3. `node src/list-targets.js` — find the brand and region numbers
-
-This command only **prints a list** — it doesn't test anything. It asks the CMS
-"which brands and regions exist here?" and shows their numbers, so you can copy the
-right ones into your `.env`:
-
-```
-Brands (use "id" as CMS_BRAND_ID, "brand_id" as PORTAL_BRAND_ID):
-  id=9  portal brand_id=5  BetJordan
-  id=5  portal brand_id=1  YYY
-  ...
-Regions (use "id" as CMS_REGION_ID ...):
-  id=8  GCC  [BH, KW, OM, QA, SA, AE]
-  ...
-```
-
-You do this once per brand/environment and save the numbers in `.env`.
-
-### 4. Run the test — one command does everything
+### 3. Run the test — one command does everything
 
 ```bash
 npm run validate:full
@@ -117,7 +100,7 @@ That `.csv` file opens in Excel/Google Sheets. **That's your deliverable**: one 
 per game with its name, provider, result — and for the failed ones, the browser's
 verdict and the path of its screenshot.
 
-### 5. Reading the results
+### 4. Reading the results
 
 The `category` column tells you which part failed, in plain terms:
 
@@ -138,7 +121,7 @@ or `LOADED` (it actually works in the browser — the HTTP failure was transient
 **Tip:** failures that share the same provider usually mean the *provider's* product
 is misconfigured in that environment — one issue, not one per game.
 
-### 6. (Optional) Check specific games by hand
+### 5. (Optional) Check specific games by hand
 
 ```bash
 node src/validate-browser.js 38510 32540

@@ -8,6 +8,7 @@
 import { config } from './config.js';
 import { writeReport, summarize } from './report.js';
 import { resolveSession } from './session.js';
+import { resolveTargets } from './targets.js';
 import { validateGamesInBrowser } from './browser.js';
 
 const gameIds = process.argv.slice(2).map(Number).filter(Boolean);
@@ -15,6 +16,7 @@ if (gameIds.length === 0) {
   console.error('Usage: node src/validate-browser.js <gameId> [gameId…]');
   process.exit(1);
 }
+await resolveTargets();
 await resolveSession();
 if (!config.sessionKey) {
   console.error('A session is required for browser validation (real mode needs a login) — ' +

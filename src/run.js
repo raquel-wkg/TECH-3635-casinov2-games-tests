@@ -14,6 +14,7 @@ import { get, mapLimit } from './http.js';
 import { classifyLauncherResponse } from './classify.js';
 import { writeReport, summarize } from './report.js';
 import { resolveSession, login } from './session.js';
+import { resolveTargets } from './targets.js';
 
 async function validateGame(game, portal) {
   const started = Date.now();
@@ -76,6 +77,7 @@ function relogin() {
 }
 
 const startedAt = new Date().toISOString();
+await resolveTargets();
 console.log(`Stage 1 — fetching catalog (brand ${config.cmsBrandId}, region ${config.cmsRegionId ?? 'any'})…`);
 const [{ games, gameListDataIds }, portal] = await Promise.all([fetchCatalog(), fetchPortalConfig()]);
 console.log(`Catalog: ${games.length} games across lists [${gameListDataIds}]`);

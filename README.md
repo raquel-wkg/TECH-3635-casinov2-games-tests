@@ -81,15 +81,30 @@ Regions (use "id" as CMS_REGION_ID ...):
 
 You do this once per brand/environment and save the numbers in `.env`.
 
-### 4. `node src/run.js` — run the actual test
+### 4. Run the test — one command does everything
 
-This is the real check. It will:
+```bash
+npm run validate:full
+```
+
+This is the complete check. It will, on its own:
 
 1. Download the **full list of games** the brand offers in Casino V2 (from the CMS).
 2. Log in with your test account.
 3. For **every game**, ask the CMS for its launch data and then request the same
    Omega launcher URL the website would open — and read the answer: game or error?
-4. Write the results to a file.
+4. Re-open **the games that failed** in a real automated browser, exactly like a
+   player would, and save a **screenshot of each one** as proof.
+5. Write everything to one results file.
+
+First time only, install the browser runner it uses for step 4:
+
+```bash
+npm install && npx playwright install chromium
+```
+
+Prefer the quick version? `npm run validate` does steps 1–3 and skips the browser —
+useful for a fast first sweep (no browser install needed).
 
 You'll see progress on screen (`25/125`, `50/125`…) and at the end a summary like:
 
@@ -99,7 +114,8 @@ Report: results/run-2026-08-18…json / results/run-2026-08-18….csv
 ```
 
 That `.csv` file opens in Excel/Google Sheets. **That's your deliverable**: one row
-per game with its name, provider and result.
+per game with its name, provider, result — and for the failed ones, the browser's
+verdict and the path of its screenshot.
 
 ### 5. Reading the results
 
@@ -112,26 +128,25 @@ The `category` column tells you which part failed, in plain terms:
 | `LAUNCH_INFO_FAILED` | The CMS refused the launch (game disabled, discarded, inactive in Omega…). Configuration issue. | Check the game in Payload. |
 | `NO_SESSION` | The test account's session didn't work — a problem of the *run*, not of the game. | Check the credentials and rerun. |
 | `ACCESS_BLOCKED` / `LAUNCHER_4XX/5XX` | The platform refused or failed. | Report with the row's detail. |
-| `SUSPICIOUS_EMPTY` | The answer was too small to judge. | Verify in the browser (next step). |
+| `SUSPICIOUS_EMPTY` | The answer was too small to judge. | The browser pass resolves it. |
+
+For failed games, the **`browserCategory`** column adds the real-browser verdict:
+`GAME_ERROR` (a player sees the error — screenshot attached), `GEO_BLOCKED`
+("blocked by regulation": may just mean the wrong country to test from, see below),
+or `LOADED` (it actually works in the browser — the HTTP failure was transient).
 
 **Tip:** failures that share the same provider usually mean the *provider's* product
 is misconfigured in that environment — one issue, not one per game.
 
-### 6. (Optional) `node src/validate-browser.js 38510 32540` — see it with your own eyes
-
-For the games that failed (or any game — the numbers are the game ids from the CSV),
-this opens each game page in a real automated browser, exactly like a player, and:
-
-- tells you whether the game **loaded**, showed a **game error**, or was
-  **geo-blocked** ("blocked by regulation" — depends on the country you run from);
-- saves a **screenshot** of each game in `results/screenshots/` — ready to attach
-  to a ticket.
-
-First time only, install the browser runner:
+### 6. (Optional) Check specific games by hand
 
 ```bash
-npm install && npx playwright install chromium
+node src/validate-browser.js 38510 32540
 ```
+
+Opens just those game ids (from the CSV) in the automated browser — same verdicts,
+same screenshots in `results/screenshots/`. Useful to re-verify a fix or to grab a
+screenshot for a ticket without re-running the whole sweep.
 
 ## Things worth knowing
 

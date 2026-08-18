@@ -4,7 +4,8 @@ import { config } from './config.js';
 
 const CSV_COLUMNS = [
   'gameId', 'title', 'producer', 'pamProvider', 'pamGameId',
-  'launchInfoStatus', 'launcherStatus', 'category', 'detail', 'ms',
+  'launchInfoStatus', 'launcherStatus', 'category', 'detail',
+  'browserCategory', 'browserDetail', 'screenshot', 'ms',
 ];
 
 export function writeReport(run) {

@@ -45,5 +45,8 @@ export const config = {
   concurrency: Number(process.env.CONCURRENCY || 5),
   timeoutMs: Number(process.env.REQUEST_TIMEOUT_MS || 20000),
   maxGames: process.env.MAX_GAMES ? Number(process.env.MAX_GAMES) : null,
+  // Cap for the automatic browser pass over suspects (--browser): at ~20 s per
+  // game it keeps the worst case bounded; raise it deliberately when needed.
+  maxBrowserGames: Number(process.env.MAX_BROWSER_GAMES || 25),
   resultsDir: join(root, 'results'),
 };

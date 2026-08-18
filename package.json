@@ -4,12 +4,16 @@
   "private": true,
   "description": "TECH-3635 PoC — validates that games exposed by Casino V2 for a brand+region can actually be launched",
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "validate": "node src/run.js",
+    "validate:full": "node src/run.js --browser",
     "validate:browser": "node src/validate-browser.js"
   },
   "devDependencies": {
     "playwright": "^1.49.0"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

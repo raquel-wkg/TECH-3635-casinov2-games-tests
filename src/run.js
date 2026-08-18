@@ -91,6 +91,34 @@ console.log(`Stage 2 — validating ${subset.length} games (concurrency ${config
 const results = await mapLimit(subset, config.concurrency, g => validateGame(g, portal),
   (done, total) => console.log(`  ${done}/${total}`));
 
+// --browser: automatically re-check the suspects in a real browser and merge
+// the verdict + screenshot into the same report. NO_SESSION is excluded (it is
+// a problem of the run, not of the games).
+const withBrowser = process.argv.includes('--browser');
+if (withBrowser) {
+  const suspects = results.filter(r => r.category !== 'OK_BOOTSTRAP' && r.category !== 'NO_SESSION');
+  const capped = suspects.slice(0, config.maxBrowserGames);
+  if (suspects.length > capped.length) {
+    console.log(`⚠ ${suspects.length} suspects, browser-checking the first ${capped.length} ` +
+      '(raise MAX_BROWSER_GAMES to check more).');
+  }
+  if (capped.length === 0) {
+    console.log('Stage 3 — no suspects to browser-check. 🎉');
+  } else if (!config.sessionKey) {
+    console.warn('Stage 3 skipped — a session is required for browser validation.');
+  } else {
+    console.log(`Stage 3 — browser-checking ${capped.length} suspect(s)…`);
+    const { validateGamesInBrowser } = await import('./browser.js');
+    const browserResults = await validateGamesInBrowser(capped.map(r => r.gameId));
+    for (const b of browserResults) {
+      const row = results.find(r => r.gameId === b.gameId);
+      row.browserCategory = b.category;
+      row.browserDetail = b.detail;
+      row.screenshot = b.screenshot;
+    }
+  }
+}
+
 const run = {
   ticket: 'TECH-3635',
   startedAt,

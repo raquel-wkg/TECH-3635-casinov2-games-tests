@@ -68,7 +68,12 @@ export function buildLaunchUrl(game, portal, { currency = null } = {}) {
     playForReal: 'true',
     sessionKey: config.sessionKey,
     brandId: String(portal.platformBrandId),
-    isMobile: 'false',
+    // Launch each build as the device it is served to: the catalog sweep runs
+    // without the `device` collapse, so mobile builds are in the list too, and
+    // launching one with isMobile=false would test a combination no player on
+    // the right device produces. (Empirically the current staging failures
+    // fail on BOTH values — but this keeps the check faithful per build.)
+    isMobile: String(Boolean(game.isMobile)),
   });
   if (game.limitsGroupId) params.set('LimitsGroupId', game.limitsGroupId);
   if (['EVO_OSS', 'SOFTSWISS'].includes(game.provider?.name)) {

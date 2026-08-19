@@ -43,7 +43,18 @@ git clone git@github.com:raquel-wkg/TECH-3635-casinov2-games-tests.git
 cd TECH-3635-casinov2-games-tests
 ```
 
-### 2. Create your configuration file
+### 2. Install the browser runner (one time — only for the browser steps)
+
+```bash
+npm install && npx playwright install chromium
+```
+
+**When do you need this?** Only for the commands that open a real browser: the
+full test (step 5) and the by-hand check (step 7). The first check (step 4) uses
+nothing but Node — if that's all you want today, skip this step; you can come
+back to it whenever you want screenshots.
+
+### 3. Create your configuration file
 
 Copy the example and open it in any text editor:
 
@@ -65,7 +76,7 @@ with the list of existing brands or regions and their names, so you can just cop
 the right one. Leaving `PORTAL_REGION_ID` empty tests the brand's whole any-region
 catalog — the same convention as a null region in Payload.
 
-### 3. First check — no browser, nothing to install
+### 4. First check — no browser needed
 
 ```bash
 npm run validate
@@ -79,7 +90,7 @@ This alone already finds the broken games. It will, on its own:
    Omega launcher URL the website would open — and read the answer: game or error?
 4. Write the results to a file.
 
-It needs nothing but Node — no Playwright, no browser install. You'll see progress
+It needs nothing but Node — step 2 is not required for this. You'll see progress
 on screen (`25/125`, `50/125`…) and at the end a summary like:
 
 ```
@@ -90,7 +101,7 @@ Report: results/run-2026-08-18…json / results/run-2026-08-18….csv
 That `.csv` file opens in Excel/Google Sheets. **That's your deliverable**: one row
 per game with its name, provider and result.
 
-### 4. Full test — adds browser proof for the failures
+### 5. Full test — adds browser proof for the failures
 
 ```bash
 npm run validate:full
@@ -98,15 +109,10 @@ npm run validate:full
 
 Same as above, plus: it re-opens **the games that failed** in a real automated
 browser, exactly like a player would, adds the browser's verdict to the report, and
-saves a **screenshot of each one** — ready to attach to tickets.
+saves a **screenshot of each one** — ready to attach to tickets. Requires the
+browser runner from step 2.
 
-First time only, install the browser runner:
-
-```bash
-npm install && npx playwright install chromium
-```
-
-### 5. Reading the results
+### 6. Reading the results
 
 The `category` column tells you which part failed, in plain terms:
 
@@ -127,7 +133,7 @@ or `LOADED` (it actually works in the browser — the HTTP failure was transient
 **Tip:** failures that share the same provider usually mean the *provider's* product
 is misconfigured in that environment — one issue, not one per game.
 
-### 6. (Optional) Check specific games by hand
+### 7. (Optional) Check specific games by hand
 
 ```bash
 npm run validate:browser -- 38510 32540

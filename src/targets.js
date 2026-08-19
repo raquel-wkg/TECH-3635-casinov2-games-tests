@@ -54,15 +54,21 @@ export async function resolveTargets() {
     console.log(`Brand "${match.name.trim()}" → CMS id ${config.cmsBrandId}, portal id ${config.portalBrandId}`);
   }
 
-  if (config.cmsRegionId == null && regionName) {
+  // Region: by portal region id (REGION_ID, consistent with BRAND_CONFIG_ID)
+  // or by name (REGION). The regions mirror carries the portal `regionId`.
+  const portalRegionId = process.env.REGION_ID;
+  if (config.cmsRegionId == null && (portalRegionId || regionName)) {
     const res = await get(`${config.cmsUrl}/api/regions?limit=100&depth=0`);
     const regions = (res.body?.docs ?? []).filter(r => !r.isDeleted);
-    const match = regions.find(r => r.name.trim().toLowerCase() === regionName.trim().toLowerCase());
+    const match = portalRegionId
+      ? regions.find(r => Number(r.regionId) === Number(portalRegionId))
+      : regions.find(r => r.name.trim().toLowerCase() === regionName.trim().toLowerCase());
     if (!match) {
-      throw new Error(`Region "${regionName}" not found on ${config.cmsUrl}. ` +
-        `Available: ${regions.map(r => r.name.trim()).join(', ')}`);
+      const available = regions.map(r => `${r.regionId} (${r.name.trim()})`).join(', ');
+      throw new Error(`Region ${portalRegionId ? `id ${portalRegionId}` : `"${regionName}"`} not found on ` +
+        `${config.cmsUrl}. Available (portal id → name): ${available}`);
     }
     config.cmsRegionId = match.id;
-    console.log(`Region "${match.name.trim()}" → CMS id ${config.cmsRegionId} [${match.countries}]`);
+    console.log(`Region "${match.name.trim()}" (portal id ${match.regionId}) → CMS id ${config.cmsRegionId} [${match.countries}]`);
   }
 }

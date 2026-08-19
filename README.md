@@ -56,13 +56,14 @@ The `.env` file is a list of `NAME=value` lines. You only need to fill in four:
 | Setting | What it is | Example (Betjordan staging) |
 |---|---|---|
 | `SITE_URL` | The website of the brand you're testing | `https://betjordan.stage24.net` |
-| `BRAND` | The brand's name, as it appears in the CMS | `BetJordan` |
-| `REGION` | A region name, or empty to test the whole brand | *(empty)* |
+| `BRAND_CONFIG_ID` | The brand configuration's id in the portal — the unit you're testing is a brand configuration (brand+region) | `19` |
+| `REGION` | The configuration's region, by name (empty = the brand's any-region catalog) | `Scandinavia` |
 | `TEST_USER` / `TEST_PASSWORD` | Your QA test account for that brand | from the ClickUp page |
 
-The tool looks up all the internal ids by itself from the brand name. If you
-misspell it, it answers with the list of brands that exist, so you can just copy
-the right one.
+The tool resolves every internal id by itself. If the config id is wrong, it
+answers with the list of existing configurations and their names, so you can just
+copy the right one. Prefer names? `BRAND=BetJordan` works too instead of
+`BRAND_CONFIG_ID`.
 
 ### 3. Run the test — one command does everything
 

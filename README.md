@@ -118,12 +118,21 @@ The `category` column tells you which part failed, in plain terms:
 
 | Category | Meaning | What to do |
 |---|---|---|
-| `OK_BOOTSTRAP` | The launcher served the game. Good. | Nothing. |
+| `OK_BOOTSTRAP` | Omega's launcher served the game's start-up page instead of an error. This is as far as a check without a browser can see — see the note below the table. | Nothing. |
 | `OMEGA_ERROR` | Omega answered with its error page ("An unexpected error has occurred… error id N"). The game is broken for players. | Report it — the `detail` column has Omega's error id for the ticket. |
 | `LAUNCH_INFO_FAILED` | The CMS refused the launch (game disabled, discarded, inactive in Omega…). Configuration issue. | Check the game in Payload. |
 | `NO_SESSION` | The test account's session didn't work — a problem of the *run*, not of the game. | Check the credentials and rerun. |
 | `ACCESS_BLOCKED` / `LAUNCHER_4XX/5XX` | The platform refused or failed. | Report with the row's detail. |
 | `SUSPICIOUS_EMPTY` | The answer was too small to judge. | The browser pass resolves it. |
+
+**Why "OK_BOOTSTRAP" and not just "OK"?** Because it says exactly what was proven.
+The HTTP status code alone means nothing here — every broken game we've found
+answered a perfectly normal HTTP 200, with the error inside the page. So the tool
+reads the page content: an error page → one of the failure categories; the game's
+real start-up document → `OK_BOOTSTRAP`. That is a very strong signal that the game
+launches, but it is not the same as *seeing* the game render on screen — only the
+browser step proves that, and its "yes" is called `LOADED`. Keeping the two names
+apart keeps the report honest about which of the two checks each verdict comes from.
 
 For failed games, the **`browserCategory`** column adds the real-browser verdict:
 `GAME_ERROR` (a player sees the error — screenshot attached), `GEO_BLOCKED`

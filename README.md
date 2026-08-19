@@ -132,6 +132,37 @@ Opens just those game ids (from the CSV) in the automated browser — same verdi
 same screenshots in `results/screenshots/`. Useful to re-verify a fix or to grab a
 screenshot for a ticket without re-running the whole sweep.
 
+## Trying it out on just a few games
+
+Before a full sweep, you can do a quick dry run — same `.env`, one extra variable:
+
+```bash
+MAX_GAMES=10 npm run validate:full
+```
+
+`MAX_GAMES` limits the check to the first N games of the catalog (empty = all).
+Perfect for verifying your configuration and credentials in under a minute.
+
+## All settings
+
+Everything the `.env` accepts. Only the first block is required.
+
+| Variable | Default | What it does |
+|---|---|---|
+| `SITE_URL` | — | The brand website under test. The CMS/Omega/middleware hosts are derived from it. |
+| `OMEGA_BRAND_ID` | — | The brand's id as known in Omega/portal. |
+| `PORTAL_REGION_ID` | *(empty)* | The region's id in the portal. Empty = the brand's any-region catalog. |
+| `TEST_USER` / `TEST_PASSWORD` | — | QA test account; the tool logs in and re-logs in by itself. |
+| `MAX_GAMES` | *(all)* | Check only the first N games — quick dry runs. |
+| `MAX_BROWSER_GAMES` | `25` | Cap on how many suspects the automatic browser pass opens. |
+| `CONCURRENCY` | `5` | Games checked in parallel (~2 games/second). Don't raise above 10 without checking with the team. |
+| `REQUEST_TIMEOUT_MS` | `20000` | How long to wait for each request before marking it failed. |
+| `PLAYER_COUNTRY` / `IP_COUNTRY` | *(empty)* | Empty = full catalog (recommended). Set both to see exactly one market's view. |
+| `LOCALE` | `en` | Language for game titles in the report. |
+| `SESSION_KEY` | *(empty)* | A ready Omega session — alternative to `TEST_USER`/`TEST_PASSWORD`. |
+| `CMS_URL` / `PS_URL` / `MW_URL` | *(derived)* | Override the derived hosts if an environment doesn't follow the `yweave.`/`ps.`/`back.` convention. |
+| `CMS_BRAND_ID` / `CMS_REGION_ID` | *(resolved)* | Advanced: skip the id resolution with explicit CMS-internal ids. |
+
 ## Things worth knowing
 
 - **Country settings**: leave `PLAYER_COUNTRY`/`IP_COUNTRY` empty to test the whole

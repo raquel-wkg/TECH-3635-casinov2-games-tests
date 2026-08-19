@@ -27,6 +27,59 @@ games that look broken, taking a screenshot of each as proof.
 Nothing ever plays the games: no bets, no clicks inside the game. It only verifies
 that they open.
 
+## The journey of opening a game — and where each error lives
+
+When a player presses Play, the request travels through four stations. Each one can
+fail in its own way, and every result category in the report points at exactly one
+station — so the CSV doesn't just say "broken", it says **where**:
+
+```mermaid
+flowchart TD
+    subgraph HTTP["Checked for EVERY game — npm run validate (no browser)"]
+        A["1 · Catalog<br/>The CMS lists the game for this brand+region<br/><i>(game enabled, ACTIVE in Omega, in a published list)</i>"]
+        B["2 · Launch data<br/>The CMS hands over the game's launch identifiers<br/><i>(pamGameId + pamProvider)</i>"]
+        C["3 · Omega launcher<br/>The same URL the website opens<br/>answers with the game's start-up page"]
+    end
+    subgraph BROWSER["Checked in a real browser — failures only (validate:full)"]
+        D["4 · Game content<br/>The provider's game actually<br/>renders inside the page"]
+    end
+
+    A -->|listed| B
+    B -->|"identifiers OK"| C
+    C -->|"start-up page"| D
+
+    A -.->|"not listed = not tested<br/>(may be compliance working, not a bug)"| XA["—"]
+    B -.->|refused| E1["LAUNCH_INFO_FAILED<br/>→ configuration in Payload"]
+    C -.->|"error page"| E2["OMEGA_ERROR / ACCESS_BLOCKED<br/>→ game or provider config in Omega"]
+    C -.->|"login page"| E3["NO_SESSION<br/>→ the run's session, not the game"]
+    D -.->|"error text inside the game"| E4["GAME_ERROR<br/>→ provider content broken"]
+    D -.->|"blocked by regulation"| E5["GEO_BLOCKED<br/>→ provider geo-block on YOUR IP"]
+    D -->|renders| OK["LOADED ✓"]
+
+    C -->|"start-up page"| OKB["OK_BOOTSTRAP ✓<br/>(as far as no-browser can see)"]
+
+    style E1 fill:#8b1a1a,color:#fff
+    style E2 fill:#8b1a1a,color:#fff
+    style E3 fill:#7a5c00,color:#fff
+    style E4 fill:#8b1a1a,color:#fff
+    style E5 fill:#7a5c00,color:#fff
+    style OK fill:#1a6b2f,color:#fff
+    style OKB fill:#1a6b2f,color:#fff
+```
+
+How to read it:
+
+- **Stations 1–3** are pure web requests — that's why `npm run validate` can cover
+  the whole catalog in minutes. Station 4 needs real eyes (a browser), so only the
+  failures get it, automatically, in `npm run validate:full`.
+- **Red boxes** are games broken for players; the arrow tells you which team/system
+  to point the ticket at. **Yellow boxes** are not the game's fault: `NO_SESSION`
+  is the run's login, `GEO_BLOCKED` depends on the country your machine connects
+  from.
+- A game that never enters at station 1 simply isn't in the report: the catalog
+  only serves games that are enabled, ACTIVE in Omega and in a published list —
+  absence can be the country filter doing its compliance job, not a failure.
+
 ## What you need before starting
 
 - **Node.js 20 or newer** installed (ask IT, or download from nodejs.org).

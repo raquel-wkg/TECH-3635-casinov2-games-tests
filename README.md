@@ -173,7 +173,7 @@ The `category` column tells you which part failed, in plain terms:
 |---|---|---|
 | `OK_BOOTSTRAP` | Omega's launcher served the game's start-up page instead of an error. This is as far as a check without a browser can see — see the note below the table. | Nothing. |
 | `OMEGA_ERROR` | Omega answered with its error page ("An unexpected error has occurred… error id N"). The game is broken for players. | Report it — the `detail` column has Omega's error id for the ticket. |
-| `LAUNCH_INFO_FAILED` | The CMS refused the launch (game disabled, discarded, inactive in Omega…). Configuration issue. | Check the game in Payload. |
+| `LAUNCH_INFO_FAILED` | The CMS refused to hand over the game's launch data — its serving filters block the game (disabled or discarded editorially, INACTIVE in Omega, or country-blacklisted). | Look the game up in Payload: the blocking flag is visible there, though fixing an INACTIVE status happens in Omega, not Payload. Rare in a sweep — catalog and launch data use the same filters, so this usually means the game changed mid-run. |
 | `NO_SESSION` | The test account's session didn't work — a problem of the *run*, not of the game. | Check the credentials and rerun. |
 | `ACCESS_BLOCKED` / `LAUNCHER_4XX/5XX` | The platform refused or failed. | Report with the row's detail. |
 | `SUSPICIOUS_EMPTY` | The answer was too small to judge. | The browser pass resolves it. |

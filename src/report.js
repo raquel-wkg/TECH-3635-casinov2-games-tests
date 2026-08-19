@@ -2,6 +2,10 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { config } from './config.js';
 
+// One stamp per process, shared by the report files and the screenshots
+// folder, so everything a run produced carries the same date.
+export const runStamp = new Date().toISOString().replace(/[:.]/g, '-');
+
 const CSV_COLUMNS = [
   'gameId', 'title', 'producer', 'pamProvider', 'pamGameId',
   'launchInfoStatus', 'launcherStatus', 'category', 'detail',
@@ -10,8 +14,7 @@ const CSV_COLUMNS = [
 
 export function writeReport(run) {
   mkdirSync(config.resultsDir, { recursive: true });
-  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-  const base = join(config.resultsDir, `run-${stamp}`);
+  const base = join(config.resultsDir, `run-${runStamp}`);
 
   writeFileSync(`${base}.json`, JSON.stringify(run, null, 2));
 

@@ -13,6 +13,7 @@
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { config } from './config.js';
+import { runStamp } from './report.js';
 
 // Category per marker: GEO_BLOCKED failures depend on the runner's egress IP
 // (the provider enforces them at content level — invisible to the HTTP stage),
@@ -31,7 +32,7 @@ const ERROR_PATTERNS = [
 /** Validates games in a real browser. Returns one result object per game id. */
 export async function validateGamesInBrowser(gameIds, { log = console.log } = {}) {
   const { chromium } = await import('playwright');
-  const shotsDir = join(config.resultsDir, 'screenshots');
+  const shotsDir = join(config.resultsDir, 'screenshots', `run-${runStamp}`);
   mkdirSync(shotsDir, { recursive: true });
 
   const browser = await chromium.launch();

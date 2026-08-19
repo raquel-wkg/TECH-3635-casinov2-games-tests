@@ -252,6 +252,12 @@ Everything the `.env` accepts. Only the first block is required.
 
 ## Things worth knowing
 
+- **Run it when nobody is editing the catalog.** The game list is downloaded page by
+  page, so if an editor publishes or removes a game list mid-run, the pages can shift
+  under the tool's feet. It protects itself (duplicates are dropped and a warning is
+  printed), but a game could still slip between pages — prefer running outside
+  editorial working hours, and re-run if you see the "catalog changed while paging"
+  warning.
 - **Country settings**: leave `PLAYER_COUNTRY`/`IP_COUNTRY` empty to test the whole
   catalog (recommended). Fill both to see exactly what a player from one market sees.
 - **Geo-blocks in the browser step** depend on the country your machine's internet

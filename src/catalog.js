@@ -13,7 +13,11 @@ import { get } from './http.js';
  * games without an image are validated too.
  */
 export async function fetchCatalog() {
-  const games = [];
+  // Deduped by game id across pages: the endpoint dedupes within each
+  // response, but the sweep pages sequentially and an editor publishing or
+  // removing a list mid-run can shift page boundaries — duplicates here are
+  // the symptom of that.
+  const byId = new Map();
   let page = 1;
   let totalPages = 1;
   let gameListDataIds = [];
@@ -32,12 +36,21 @@ export async function fetchCatalog() {
     if (res.status !== 200 || !res.body?.docs) {
       throw new Error(`Catalog page ${page} failed: HTTP ${res.status} ${res.error ?? ''} (${url})`);
     }
-    games.push(...res.body.docs);
+    let dupes = 0;
+    for (const g of res.body.docs) {
+      if (byId.has(g.id)) dupes++;
+      else byId.set(g.id, g);
+    }
+    if (dupes > 0) {
+      console.warn(`⚠ Page ${page}: ${dupes} game(s) already seen on earlier pages — the catalog ` +
+        'changed while paging (an editor is likely publishing changes). Duplicates were dropped, ' +
+        'but consider re-running when no editorial changes are in progress.');
+    }
     totalPages = res.body.totalPages;
     gameListDataIds = res.body.gameListDataIds ?? gameListDataIds;
     page++;
   } while (page <= totalPages);
-  return { games, gameListDataIds };
+  return { games: [...byId.values()], gameListDataIds };
 }
 
 /** Fetches portal brand-config: platform brandId + currency→platform overrides. */

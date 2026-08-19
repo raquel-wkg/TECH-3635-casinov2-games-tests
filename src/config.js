@@ -30,9 +30,9 @@ export const config = {
   cmsUrl: process.env.CMS_URL || derive('yweave'),
   psUrl: process.env.PS_URL || derive('ps'),
   mwUrl: process.env.MW_URL || derive('back'),
-  // Brand/region: QA sets BRAND_CONFIG_ID + REGION_ID (portal ids) — or
-  // BRAND=<name> — and the internal ids are resolved automatically
-  // (src/targets.js). Explicit CMS ids still win.
+  // Brand/region: QA sets BRAND_CONFIG_ID + REGION_ID (portal ids) and the
+  // internal ids are resolved automatically (src/targets.js). REGION_ID empty
+  // = the brand's any-region catalog. Explicit CMS ids still win.
   cmsBrandId: process.env.CMS_BRAND_ID ? Number(process.env.CMS_BRAND_ID) : null,
   cmsRegionId: process.env.CMS_REGION_ID ? Number(process.env.CMS_REGION_ID) : null,
   portalBrandId: process.env.PORTAL_BRAND_ID ? Number(process.env.PORTAL_BRAND_ID) : null,

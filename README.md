@@ -62,8 +62,8 @@ The `.env` file is a list of `NAME=value` lines. You only need to fill in four:
 
 The tool resolves every internal id by itself. If the config id is wrong, it
 answers with the list of existing configurations and their names, so you can just
-copy the right one. Prefer names? `BRAND=BetJordan` works too instead of
-`BRAND_CONFIG_ID`.
+copy the right one. Leaving `REGION_ID` empty tests the brand's whole any-region
+catalog — the same convention as a null region in Payload.
 
 ### 3. Run the test — one command does everything
 

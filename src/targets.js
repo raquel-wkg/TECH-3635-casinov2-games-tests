@@ -2,18 +2,18 @@ import { config } from './config.js';
 import { get } from './http.js';
 
 /**
- * Resolves the portal-facing inputs (BRAND_ID, REGION_ID) into the
- * internal ids the endpoints need, so QA configures what the portal shows
+ * Resolves the business inputs (OMEGA_BRAND_ID, PORTAL_REGION_ID) into the
+ * internal ids the endpoints need, so QA configures what Omega/portal show
  * instead of copying CMS-internal numbers. Explicit
  * CMS_BRAND_ID / CMS_REGION_ID env vars always win.
  */
 export async function resolveTargets() {
-  // The test targets a brand+region, both given by their PORTAL ids — the
-  // business identifiers (the CMS ids are per-database autoincrements). An
-  // empty REGION_ID means the brand's any-region catalog, same convention as
-  // a null region in Payload.
+  // The test targets a brand+region by their business ids — the brand id in
+  // Omega/portal and the region id in portal (the CMS ids are per-database
+  // autoincrements). An empty PORTAL_REGION_ID means the brand's any-region
+  // catalog, same convention as a null region in Payload.
   if (!config.portalBrandId) {
-    throw new Error('Set BRAND_ID=<portal brand id> (or the advanced CMS_BRAND_ID + CMS_REGION_ID override).');
+    throw new Error('Set OMEGA_BRAND_ID=<brand id in Omega/portal> (or the advanced CMS_BRAND_ID + CMS_REGION_ID override).');
   }
   if (!config.cmsBrandId) {
     const res = await get(`${config.cmsUrl}/api/brands?where[brand_id][equals]=${config.portalBrandId}&limit=5&depth=0`);
@@ -29,9 +29,9 @@ export async function resolveTargets() {
     console.log(`Brand ${config.portalBrandId} "${doc.name.trim()}" → CMS brand id ${config.cmsBrandId}`);
   }
 
-  // Region: by portal region id (REGION_ID, consistent with BRAND_ID).
-  // The regions mirror carries the portal `regionId`.
-  const portalRegionId = process.env.REGION_ID;
+  // Region: by portal region id (PORTAL_REGION_ID). The regions mirror
+  // carries the portal `regionId`.
+  const portalRegionId = process.env.PORTAL_REGION_ID;
   if (config.cmsRegionId == null && portalRegionId) {
     const res = await get(`${config.cmsUrl}/api/regions?limit=100&depth=0`);
     const regions = (res.body?.docs ?? []).filter(r => !r.isDeleted);

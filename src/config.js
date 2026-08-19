@@ -30,13 +30,14 @@ export const config = {
   cmsUrl: process.env.CMS_URL || derive('yweave'),
   psUrl: process.env.PS_URL || derive('ps'),
   mwUrl: process.env.MW_URL || derive('back'),
-  // Brand/region: QA sets BRAND_ID + REGION_ID (portal ids — the business
-  // identifiers) and the internal CMS ids are resolved automatically
-  // (src/targets.js). REGION_ID empty = the brand's any-region catalog.
-  // Explicit CMS ids still win.
+  // Brand/region: QA sets OMEGA_BRAND_ID (the brand id in Omega/portal) and
+  // PORTAL_REGION_ID (the region id in portal) — the business identifiers —
+  // and the internal CMS ids are resolved automatically (src/targets.js).
+  // PORTAL_REGION_ID empty = the brand's any-region catalog. Explicit CMS ids
+  // still win.
   cmsBrandId: process.env.CMS_BRAND_ID ? Number(process.env.CMS_BRAND_ID) : null,
   cmsRegionId: process.env.CMS_REGION_ID ? Number(process.env.CMS_REGION_ID) : null,
-  portalBrandId: process.env.BRAND_ID ? Number(process.env.BRAND_ID) : null,
+  portalBrandId: process.env.OMEGA_BRAND_ID ? Number(process.env.OMEGA_BRAND_ID) : null,
   // Optional ON PURPOSE: with neither country set, the CMS omits the game and
   // producer blacklist filters (verified: helpers.ts applies them only when
   // countries.length > 0), so the sweep covers the FULL curated catalog of the

@@ -56,13 +56,13 @@ The `.env` file is a list of `NAME=value` lines. You only need to fill in four:
 | Setting | What it is | Example (Betjordan staging) |
 |---|---|---|
 | `SITE_URL` | The website of the brand you're testing | `https://betjordan.stage24.net` |
-| `BRAND_ID` | The brand's id in the portal | `5` |
-| `REGION_ID` | The region's id in the portal (empty = the brand's any-region catalog) | `11` |
+| `OMEGA_BRAND_ID` | The brand's id as known in Omega/portal | `5` |
+| `PORTAL_REGION_ID` | The region's id in the portal (empty = the brand's any-region catalog) | `11` |
 | `TEST_USER` / `TEST_PASSWORD` | Your QA test account for that brand | from the ClickUp page |
 
 The tool resolves every internal id by itself. If an id is wrong, it answers
 with the list of existing brands or regions and their names, so you can just copy
-the right one. Leaving `REGION_ID` empty tests the brand's whole any-region
+the right one. Leaving `PORTAL_REGION_ID` empty tests the brand's whole any-region
 catalog — the same convention as a null region in Payload.
 
 ### 3. Run the test — one command does everything

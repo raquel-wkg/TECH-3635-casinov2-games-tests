@@ -27,6 +27,13 @@ export async function login() {
     const data = json?.data ?? json;
     if (data?.status === 'SUCCESS' && data.sessionKey) return data.sessionKey;
     const reason = data?.message ?? res.error ?? `HTTP ${res.status}`;
+    // Wrong credentials are definitive — retrying only muddies the message.
+    // The middleware answers FAIL_UN_PW ("The username or password was
+    // incorrect"); locked/blocked account statuses read the same way.
+    if (typeof data?.status === 'string' && data.status.startsWith('FAIL')) {
+      throw new Error(`Login rejected for ${user}: ${reason}\n` +
+        '(Check TEST_USER / TEST_PASSWORD in your .env — the values must match the ClickUp "QA Testing accounts" page for THIS environment.)');
+    }
     if (attempt === 1) {
       console.warn(`Login attempt failed (${String(reason).slice(0, 120)}…) — retrying in 5 s.`);
       await new Promise(r => setTimeout(r, 5000));

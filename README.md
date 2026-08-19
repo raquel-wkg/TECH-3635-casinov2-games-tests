@@ -143,6 +143,20 @@ Opens just those game ids (from the CSV) in the automated browser — same verdi
 same screenshots in `results/screenshots/`. Useful to re-verify a fix or to grab a
 screenshot for a ticket without re-running the whole sweep.
 
+## If the login fails
+
+The run stops before testing anything if it can't log in. The error tells you which
+of the two cases you're in:
+
+| Error starts with | Cause | What to do |
+|---|---|---|
+| `Login rejected …` ("The username or password was incorrect") | Wrong `TEST_USER` / `TEST_PASSWORD`. | Check them against the ClickUp "QA Testing accounts" page — **for the environment you're testing**: staging and production accounts are different. |
+| `Login failed …` (HTTP 502, database/SQL errors) | The environment itself is having trouble — the tool already retried once. | Nothing on your side. Try again in a few minutes; if it keeps happening, report it (the error text is exactly what ops needs). |
+
+Both can look alike when the environment is degraded: a wrong password may surface
+as server errors until the environment answers properly. If in doubt, fix the
+credentials first, then retry.
+
 ## Trying it out on just a few games
 
 Before a full sweep, you can do a quick dry run — same `.env`, one extra variable:

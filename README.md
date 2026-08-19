@@ -151,5 +151,5 @@ Architecture, launch-flow documentation, error-marker calibration, scale estimat
 and the follow-up plan: [`docs/technical-proposal.md`](docs/technical-proposal.md).
 All requests mirror the real client (`launch-info` params, `prepareGameIframeLink`
 URL building, localStorage session envelope); if the client changes, mirror it here.
-The error classifier is a list in `src/classify.js` (HTTP) and
-`src/validate-browser.js` (browser) — extend it whenever QA meets a new error text.
+The error classifier is a list in `src/classify.js` (HTTP) and `src/browser.js`
+(browser) — extend it whenever QA meets a new error text.

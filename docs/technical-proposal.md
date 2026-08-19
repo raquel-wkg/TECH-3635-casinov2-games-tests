@@ -168,7 +168,8 @@ full production-scale run.
 
 Run the PoC per **brand configuration** from a laptop or CI job against **staging**:
 
-1. `node src/list-targets.js` → picks CMS brand/region ids without guessing.
+1. Configure by name: `BRAND=<name>` (and optionally `REGION=<name>`) — the tool
+   resolves the CMS/portal ids itself; a wrong name answers with the available list.
 2. `node src/run.js` with the brand/region config → CSV of failures by category. The
    tool logs in by itself (`TEST_USER`/`TEST_PASSWORD` from the ClickUp "QA Testing
    accounts" page) and re-logs in if the session expires mid-run.

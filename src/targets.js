@@ -2,13 +2,13 @@ import { config } from './config.js';
 import { get } from './http.js';
 
 /**
- * Resolves BRAND / REGION names into the internal ids the endpoints need, so
- * QA configures human-readable names instead of copying numbers. Explicit
+ * Resolves the portal-facing inputs (BRAND_CONFIG_ID, REGION_ID, or BRAND by
+ * name) into the internal ids the endpoints need, so QA configures what the
+ * portal shows instead of copying CMS-internal numbers. Explicit
  * CMS_BRAND_ID / PORTAL_BRAND_ID / CMS_REGION_ID env vars always win.
  */
 export async function resolveTargets() {
   const brandName = process.env.BRAND;
-  const regionName = process.env.REGION;
   const brandConfigId = process.env.BRAND_CONFIG_ID;
 
   // Preferred: the portal brand-configuration id — the test's real unit is a
@@ -54,19 +54,17 @@ export async function resolveTargets() {
     console.log(`Brand "${match.name.trim()}" → CMS id ${config.cmsBrandId}, portal id ${config.portalBrandId}`);
   }
 
-  // Region: by portal region id (REGION_ID, consistent with BRAND_CONFIG_ID)
-  // or by name (REGION). The regions mirror carries the portal `regionId`.
+  // Region: by portal region id (REGION_ID, consistent with BRAND_CONFIG_ID).
+  // The regions mirror carries the portal `regionId`.
   const portalRegionId = process.env.REGION_ID;
-  if (config.cmsRegionId == null && (portalRegionId || regionName)) {
+  if (config.cmsRegionId == null && portalRegionId) {
     const res = await get(`${config.cmsUrl}/api/regions?limit=100&depth=0`);
     const regions = (res.body?.docs ?? []).filter(r => !r.isDeleted);
-    const match = portalRegionId
-      ? regions.find(r => Number(r.regionId) === Number(portalRegionId))
-      : regions.find(r => r.name.trim().toLowerCase() === regionName.trim().toLowerCase());
+    const match = regions.find(r => Number(r.regionId) === Number(portalRegionId));
     if (!match) {
       const available = regions.map(r => `${r.regionId} (${r.name.trim()})`).join(', ');
-      throw new Error(`Region ${portalRegionId ? `id ${portalRegionId}` : `"${regionName}"`} not found on ` +
-        `${config.cmsUrl}. Available (portal id → name): ${available}`);
+      throw new Error(`Region id ${portalRegionId} not found on ${config.cmsUrl}. ` +
+        `Available (portal id → name): ${available}`);
     }
     config.cmsRegionId = match.id;
     console.log(`Region "${match.name.trim()}" (portal id ${match.regionId}) → CMS id ${config.cmsRegionId} [${match.countries}]`);

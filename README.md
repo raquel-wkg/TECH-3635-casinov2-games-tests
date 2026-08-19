@@ -57,7 +57,7 @@ The `.env` file is a list of `NAME=value` lines. You only need to fill in four:
 |---|---|---|
 | `SITE_URL` | The website of the brand you're testing | `https://betjordan.stage24.net` |
 | `BRAND_CONFIG_ID` | The brand configuration's id in the portal — the unit you're testing is a brand configuration (brand+region) | `19` |
-| `REGION_ID` | The configuration's region — its id in the portal (empty = the brand's any-region catalog). `REGION=<name>` works too | `11` |
+| `REGION_ID` | The configuration's region — its id in the portal (empty = the brand's any-region catalog) | `11` |
 | `TEST_USER` / `TEST_PASSWORD` | Your QA test account for that brand | from the ClickUp page |
 
 The tool resolves every internal id by itself. If the config id is wrong, it

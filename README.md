@@ -65,32 +65,22 @@ with the list of existing brands or regions and their names, so you can just cop
 the right one. Leaving `PORTAL_REGION_ID` empty tests the brand's whole any-region
 catalog — the same convention as a null region in Payload.
 
-### 3. Run the test — one command does everything
+### 3. First check — no browser, nothing to install
 
 ```bash
-npm run validate:full
+npm run validate
 ```
 
-This is the complete check. It will, on its own:
+This alone already finds the broken games. It will, on its own:
 
 1. Download the **full list of games** the brand offers in Casino V2 (from the CMS).
 2. Log in with your test account.
 3. For **every game**, ask the CMS for its launch data and then request the same
    Omega launcher URL the website would open — and read the answer: game or error?
-4. Re-open **the games that failed** in a real automated browser, exactly like a
-   player would, and save a **screenshot of each one** as proof.
-5. Write everything to one results file.
+4. Write the results to a file.
 
-First time only, install the browser runner it uses for step 4:
-
-```bash
-npm install && npx playwright install chromium
-```
-
-Prefer the quick version? `npm run validate` does steps 1–3 and skips the browser —
-useful for a fast first sweep (no browser install needed).
-
-You'll see progress on screen (`25/125`, `50/125`…) and at the end a summary like:
+It needs nothing but Node — no Playwright, no browser install. You'll see progress
+on screen (`25/125`, `50/125`…) and at the end a summary like:
 
 ```
 Summary by category: { OK_BOOTSTRAP: 119, OMEGA_ERROR: 6 }
@@ -98,10 +88,25 @@ Report: results/run-2026-08-18…json / results/run-2026-08-18….csv
 ```
 
 That `.csv` file opens in Excel/Google Sheets. **That's your deliverable**: one row
-per game with its name, provider, result — and for the failed ones, the browser's
-verdict and the path of its screenshot.
+per game with its name, provider and result.
 
-### 4. Reading the results
+### 4. Full test — adds browser proof for the failures
+
+```bash
+npm run validate:full
+```
+
+Same as above, plus: it re-opens **the games that failed** in a real automated
+browser, exactly like a player would, adds the browser's verdict to the report, and
+saves a **screenshot of each one** — ready to attach to tickets.
+
+First time only, install the browser runner:
+
+```bash
+npm install && npx playwright install chromium
+```
+
+### 5. Reading the results
 
 The `category` column tells you which part failed, in plain terms:
 
@@ -122,10 +127,10 @@ or `LOADED` (it actually works in the browser — the HTTP failure was transient
 **Tip:** failures that share the same provider usually mean the *provider's* product
 is misconfigured in that environment — one issue, not one per game.
 
-### 5. (Optional) Check specific games by hand
+### 6. (Optional) Check specific games by hand
 
 ```bash
-node src/validate-browser.js 38510 32540
+npm run validate:browser -- 38510 32540
 ```
 
 Opens just those game ids (from the CSV) in the automated browser — same verdicts,

@@ -202,7 +202,13 @@ npm run validate:browser -- 38510 32540
 ```
 
 Opens just those game ids (from the CSV) in the automated browser — same verdicts,
-same screenshots in `results/screenshots/run-<date>/` (the same date as the CSV/JSON report). Useful to re-verify a fix or to grab a
+same screenshots in `results/screenshots/run-<date>/` (the same date as the CSV/JSON report).
+
+**About the number in `game-<id>.png`:** it is the game's id **in the CMS
+(Payload)** — the same number as the `gameId` column of the CSV and as the website
+URL (`/game/38510`). It is NOT the Omega id: Omega's identifier is the `pamGameId`
+column (e.g. `playtech:ZodiacCharms`). Remember CMS ids are per environment — the
+same title has different ids on staging, pre-prod and production. Useful to re-verify a fix or to grab a
 screenshot for a ticket without re-running the whole sweep.
 
 ## If the login fails

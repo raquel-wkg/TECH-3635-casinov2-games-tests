@@ -245,6 +245,7 @@ Everything the `.env` accepts. Only the first block is required.
 | `CONCURRENCY` | `5` | Games checked in parallel (~2 games/second). Don't raise above 10 without checking with the team. |
 | `REQUEST_TIMEOUT_MS` | `20000` | How long to wait for each request before marking it failed. |
 | `PLAYER_COUNTRY` / `IP_COUNTRY` | *(empty)* | Empty = full catalog (recommended). Set both to see exactly one market's view. |
+| `INCLUDE_GAMES_WITHOUT_IMAGE` | `false` | By default the sweep tests what players see — grids hide games without an image. Set `true` to also validate the image-less curated games (invisible in the UI, still reachable by direct link); in production that's ~3,600 games instead of ~500. |
 | `LOCALE` | `en` | Language for game titles in the report. |
 | `SESSION_KEY` | *(empty)* | A ready Omega session — alternative to `TEST_USER`/`TEST_PASSWORD`. |
 | `CMS_URL` / `PS_URL` / `MW_URL` | *(derived)* | Override the derived hosts if an environment doesn't follow the `yweave.`/`ps.`/`back.` convention. |

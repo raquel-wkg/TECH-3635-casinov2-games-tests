@@ -9,8 +9,9 @@ import { get } from './http.js';
  * catalog Casino V2 exposes. Each game already carries pamGameId/pamProvider,
  * so no per-game CMS call is needed to build the launch URL.
  *
- * hideGamesWithoutImage defaults to true on the endpoint — we force false so
- * games without an image are validated too.
+ * hideGamesWithoutImage follows config: by default the sweep matches what
+ * players see (grids hide image-less games); INCLUDE_GAMES_WITHOUT_IMAGE=true
+ * widens it to every curated game.
  */
 export async function fetchCatalog() {
   // Deduped by game id across pages: the endpoint dedupes within each
@@ -26,7 +27,7 @@ export async function fetchCatalog() {
       page: String(page),
       limit: '100',
       locale: config.locale,
-      hideGamesWithoutImage: 'false',
+      hideGamesWithoutImage: String(config.hideGamesWithoutImage),
     });
     if (config.playerCountry) params.set('playerCountry', config.playerCountry);
     if (config.ipCountry) params.set('ipCountry', config.ipCountry);
